@@ -1,8 +1,6 @@
-import identifiers.Variable;
+import identifiers.Image;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 
 public class LexicalAnalyzer {
@@ -15,17 +13,14 @@ public class LexicalAnalyzer {
 		String line = new String();
 		System.out.println("Bonjour");
 		
-		while(true) {
-			try{
-				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-				while((line=br.readLine())!=null){
-					Variable.check(line);
-				}
-		 
-			}catch(IOException io){
-				io.printStackTrace();
-			}	
+		Scanner input = new Scanner(System.in).useDelimiter("\\.");
+		
+		while(line != "end") {
+			line = input.next();
+			Image.check(line);
 		}
+		
+		input.close();
 	}
 
 }
