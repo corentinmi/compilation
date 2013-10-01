@@ -12,6 +12,8 @@ public class LexicalAnalyzer {
 	private static ArrayList<Letter> DFA = new ArrayList<Letter>();
 
 	/**
+	 * Charge le dictionnaire, effectue une boucle qui lit l'entrée
+	 * standard et la fait passer dans les DFA.
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -34,6 +36,10 @@ public class LexicalAnalyzer {
 		input.close();
 	}
 	
+	/**
+	 * Charge le dictionnaire des unités lexicales,
+	 * crée un DFA en arbre.
+	 */
 	private static void loadDico() {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("dico.txt"));
@@ -76,6 +82,12 @@ public class LexicalAnalyzer {
 		}
 	}
 	
+	/**
+	 * Utilise le DFA en arbre pour vérifier si un input
+	 * est une unité lexicale.
+	 * @param input l'entrée à vérifier
+	 * @return true si il appartient au langage
+	 */
 	private static boolean check(String input) {
 		ArrayList<Letter> current = LexicalAnalyzer.DFA;
 		ArrayList<Letter> old;

@@ -1,4 +1,4 @@
-identification
+identification IDENTIFICATION_KEYWORD
 division
 program-id
 author
