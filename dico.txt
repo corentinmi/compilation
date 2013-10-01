@@ -6,53 +6,53 @@ author AUTHOR_KEYWORD
 \n END_OF_INSTRUCTION_NEW_LINE
 date-written DATE-WRITTEN_KEYWORD
 environment ENVIRONMENT_KEYWORD
-configuration
-section
-source-computer
-object-computer
-data
-working-storage
-pic
-value
-procedure
-end
-program
-stop
-run
-move
-to
-compute
-add
-subtract
-multiply
-divide
-giving
-,
-(
-)
--
-+
-=
-*
-/
-not
-true
-false
-<
->
-<=
->=
-and
-or
-if
-else
-end-if
-perform
-until
-accept
-display
-identiﬁer
-image
-integer
-real
-string
+configuration CONFIGURATION_KEYWORD
+section SECTION_KEYWORD
+source-computer SOURCE-COMPUTER_KEYWORD
+object-computer OBJECT-COMPUTER_KEYWORD
+data DATA_KEYWORD
+working-storage WORKING-STORAGE_KEYWORD
+pic PIC_KEYWORD
+value VALUE_KEYWORD
+procedure PROCEDURE_KEYWORD
+end END_KEYWORD
+program PROGRAM_KEYWORD
+stop STOP_KEYWORD
+run RUN_KEYWORD
+move MOVE_KEYWORD
+to TO_KEYWORD
+compute COMPUTE_KEYWORD
+add ADD
+subtract SUBTRACT 
+multiply MULTIPLY
+divide DIVIDE
+giving GIVING_KEYWORD
+, COMMA
+( RIGHT_PARENTHESIS 
+) LEFT_PARENTHESIS
+- MINUS
++ PLUS
+= EQUALS
+* ASTERIK
+/ BACKSLASH
+not NOT
+true TRUE
+false FALSE
+< LOWER_THAN
+> BIGGER_THAN
+<= LOWER_OR_EQUALS
+>= BIGGER_OR_EQUALS
+and AND
+or OR
+if IF
+else ELSE
+end-if END-IF
+perform PERFORM_KEYWORD
+until UNTIL_KEYWORD
+accept ACCEPT_KEYWORD
+display DISPLAY_KEYWORD
+identiﬁer IDENTIFIER_KEYWORD
+image IMAGE_KEYWORD
+integer INTEGER_KEYWORD
+real REAL_KEYWORD
+string STRING_KEYWORD
