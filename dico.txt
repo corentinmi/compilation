@@ -1,11 +1,11 @@
 identification IDENTIFICATION_KEYWORD
-division
-program-id
-author
-.
-\n
-date-written
-environment
+division DIVISION
+program-id PROGRAM_ID_KEYWORD
+author AUTHOR_KEYWORD
+. END_OF_INSTRUCTION_POINT
+\n END_OF_INSTRUCTION_NEW_LINE
+date-written DATE-WRITTEN_KEYWORD
+environment ENVIRONMENT_KEYWORD
 configuration
 section
 source-computer
