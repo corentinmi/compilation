@@ -2,6 +2,7 @@ import identifiers.Image;
 import identifiers.Letter;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -24,12 +25,16 @@ public class LexicalAnalyzer {
 		System.out.println("Bonjour");
 		
 		Scanner input = new Scanner(System.in);
+		Scanner ls;
 		//input.useDelimiter("\\.");
 		
 		while(line != "end") {
-			line = input.next();
-			if (LexicalAnalyzer.check(line))
-				System.out.println("okay");
+			line = input.nextLine();
+			ls = new Scanner(line);
+			while (ls.hasNext()) {
+				LexicalAnalyzer.check(ls.next());
+			}
+			System.out.println("token: \\n --- lexical unit: END_OF_INSTRUCTION");
 			//Image.check(line);
 		}
 		
@@ -42,14 +47,15 @@ public class LexicalAnalyzer {
 	 */
 	private static void loadDico() {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("dico.txt"));
+			Scanner br = new Scanner(new File("dico.txt"));
 			String line;
 			char c;
 			int i, j;
 			ArrayList<Letter> current, old;
-			Letter temp;
+			Letter temp = null;
 			
-			while ((line = br.readLine()) != null) {
+			while (br.hasNext()) {
+				line = br.next();
 				current = LexicalAnalyzer.DFA;
 				
 				for (i = 0; i < line.length(); i++) {
@@ -61,6 +67,7 @@ public class LexicalAnalyzer {
 					
 					for (j = 0; j < current.size(); j++) {
 						if (current.get(j).getValue() == c) {
+							temp = current.get(j);
 							current = current.get(j).getNext();
 							break;
 						}
@@ -71,7 +78,12 @@ public class LexicalAnalyzer {
 						current.add(temp);
 						current = temp.getNext();
 					}
+					
 				}
+				
+				temp.setUnit(br.next());
+				
+				
 			}
 			
 			br.close();
@@ -91,6 +103,7 @@ public class LexicalAnalyzer {
 	private static boolean check(String input) {
 		ArrayList<Letter> current = LexicalAnalyzer.DFA;
 		ArrayList<Letter> old;
+		Letter temp = null;
 		boolean accept = false;
 		
 		for (int i = 0; i < input.length(); i++) {
@@ -98,11 +111,31 @@ public class LexicalAnalyzer {
 			for (int j = 0; j < current.size(); j++) {
 				if (current.get(j).getValue() == input.charAt(i)) {
 					accept = current.get(j).isAccepting();
+					temp = current.get(j);
 					current = current.get(j).getNext();
 				}
 			}
-			if (old == current) {
-				return false;
+		}
+		
+		if (accept) {
+			System.out.println("token: "+input+" --- lexical unit: "+temp.getUnit());
+		}
+		if (!accept) {
+			if (((input.charAt(0) >= 'a') && (input.charAt(0) <= 'z')) ||
+				((input.charAt(0) >= 'A') && (input.charAt(0) <= 'Z'))) {
+				accept = true;
+				for (int i = 1; i < input.length(); i++) {
+					if (! (((input.charAt(i) >= 'a') && (input.charAt(i) <= 'z')) ||
+							((input.charAt(i) >= 'A') && (input.charAt(i) <= 'Z')) ||
+							((input.charAt(i) >= '0') && (input.charAt(i) <= '9')) ||
+							(input.charAt(i) == '_') || (input.charAt(i) == '-'))) {
+						accept = false;
+					}
+				}
+				
+				if (accept) {
+					System.out.println("token: "+input+" --- lexical unit: IDENTIFIER");
+				}
 			}
 		}
 		

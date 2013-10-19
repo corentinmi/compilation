@@ -6,7 +6,16 @@ public class Letter {
 
 	private char value;
 	private boolean accept;
+	private String unit;
 	
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+
 	public char getValue() {
 		return value;
 	}
