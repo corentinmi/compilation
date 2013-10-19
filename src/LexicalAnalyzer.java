@@ -145,6 +145,9 @@ public class LexicalAnalyzer {
 			}
 		}
 		
+		if (input.contentEquals("0"))
+			accept = true;
+		
 		return accept;
 	}
 	
@@ -214,7 +217,7 @@ public class LexicalAnalyzer {
 	 * @return true si il appartient au langage
 	 */
 	private static boolean check(String input) {
-		System.out.println(input);
+		//System.out.println(input);
 		boolean accept = false;
 		
 		accept = LexicalAnalyzer.checkKeyword(input);
