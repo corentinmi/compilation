@@ -1,11 +1,10 @@
-import identifiers.Image;
 import identifiers.Letter;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class LexicalAnalyzer {
@@ -34,6 +33,7 @@ public class LexicalAnalyzer {
 			while (ls.hasNext()) {
 				LexicalAnalyzer.check(ls.next());
 			}
+			LexicalAnalyzer.checkString(line);
 			System.out.println("token: \\n --- lexical unit: END_OF_INSTRUCTION");
 			//Image.check(line);
 		}
@@ -94,6 +94,8 @@ public class LexicalAnalyzer {
 		}
 	}
 	
+	//private static boolean checkKeyword(String input)
+	
 	/**
 	 * Utilise le DFA en arbre pour vérifier si un input
 	 * est une unité lexicale.
@@ -101,6 +103,7 @@ public class LexicalAnalyzer {
 	 * @return true si il appartient au langage
 	 */
 	private static boolean check(String input) {
+		System.out.println(input);
 		ArrayList<Letter> current = LexicalAnalyzer.DFA;
 		ArrayList<Letter> old;
 		Letter temp = null;
@@ -115,11 +118,70 @@ public class LexicalAnalyzer {
 					current = current.get(j).getNext();
 				}
 			}
+			if (old == current) {
+				accept = false;
+				break;
+			}
 		}
 		
 		if (accept) {
 			System.out.println("token: "+input+" --- lexical unit: "+temp.getUnit());
 		}
+		
+		if (!accept) {
+			Pattern pattern = Pattern.compile("(s?)9(\\((\\d+)\\))?(v9(\\((\\d+)\\))?)?", Pattern.CASE_INSENSITIVE);
+			Matcher match = pattern.matcher(input);
+			if (match.matches()) {
+				accept = true;
+				System.out.println("token: "+input+" --- lexical unit: IMAGE_TYPE");
+			};
+		}
+		
+		if (!accept) {
+			boolean meaning = false;
+			if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
+					((input.charAt(0) >= '1') && (input.charAt(0) <= '9'))) {
+				meaning = ((input.charAt(0) >= '1') && (input.charAt(0) <= '9'));
+				accept = true;
+				for (int i = 1; i < input.length(); i++) {
+					if (! (((input.charAt(i) >= '1') && (input.charAt(i) <= '9')) ||
+							((input.charAt(i) >= '0') && (input.charAt(i) <= '9') && meaning))){
+						accept = false;
+					}
+					if (!meaning)
+						meaning = ((input.charAt(i) >= '1') && (input.charAt(i) <= '9'));
+				}
+				
+				if (accept) {
+					System.out.println("token: "+input+" --- lexical unit: INTEGER");
+				}
+			}
+		}
+		
+		if (!accept) {
+			boolean point = true;
+			if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
+					((input.charAt(0) >= '1') && (input.charAt(0) <= '9'))) {
+				boolean meaning = ((input.charAt(0) >= '1') && (input.charAt(0) <= '9'));
+				accept = true;
+				for (int i = 1; i < input.length(); i++) {
+					if (! (((input.charAt(i) >= '1') && (input.charAt(i) <= '9')) ||
+							(((input.charAt(i) >= '0') && (input.charAt(i) <= '9')) && meaning) ||
+							((input.charAt(i) == '.') && point)) ){
+						if (input.charAt(i) == '.')
+							point = false;
+						accept = false;
+					}
+					if (!meaning)
+						meaning = ((input.charAt(i) >= '1') && (input.charAt(i) <= '9'));
+				}
+				
+				if (accept) {
+					System.out.println("token: "+input+" --- lexical unit: REAL");
+				}
+			}
+		}
+		
 		if (!accept) {
 			if (((input.charAt(0) >= 'a') && (input.charAt(0) <= 'z')) ||
 				((input.charAt(0) >= 'A') && (input.charAt(0) <= 'Z'))) {
@@ -140,6 +202,18 @@ public class LexicalAnalyzer {
 		}
 		
 		return accept;
+	}
+	
+	/** 
+	 * Checks if the line contains a string
+	 * @param input the input line
+	 */
+	public static void checkString(String input) {
+		Pattern pattern = Pattern.compile("\\'[a-zA-Z\\d\\+\\-\\*/:!? ]*\\'", Pattern.CASE_INSENSITIVE);
+		Matcher match = pattern.matcher(input);
+		while (match.find()) {
+			System.out.println("token: "+match.group()+" --- lexical unit: STRING");
+		}
 	}
 
 }
