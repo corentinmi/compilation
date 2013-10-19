@@ -12,22 +12,21 @@ public class LexicalAnalyzer {
 	private static ArrayList<Letter> DFA = new ArrayList<Letter>();
 
 	/**
-	 * Charge le dictionnaire, effectue une boucle qui lit l'entrée
-	 * standard et la fait passer dans les DFA.
+	 * Loads the dictionary, and loops on the standard input.
+	 * When a token is detected, it is checked by the DFA
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		String line = new String();
 		
 		LexicalAnalyzer.loadDico();
-		System.out.println("Bonjour");
+		System.out.println("Introduction to Language Theory and Compilation");
+		System.out.println("Project 1 - Jorge Garcia Ximenez and Corentin Misercque");
 		
 		Scanner input = new Scanner(System.in);
 		Scanner ls;
-		//input.useDelimiter("\\.");
 		
-		while(line != "end") {
+		while(!line.contentEquals("end")) {
 			line = input.nextLine();
 			ls = new Scanner(line);
 			while (ls.hasNext()) {
@@ -35,15 +34,14 @@ public class LexicalAnalyzer {
 			}
 			LexicalAnalyzer.checkString(line);
 			System.out.println("token: \\n --- lexical unit: END_OF_INSTRUCTION");
-			//Image.check(line);
 		}
 		
 		input.close();
 	}
 	
 	/**
-	 * Charge le dictionnaire des unités lexicales,
-	 * crée un DFA en arbre.
+	 * Loads the keywords dictionary, and creates
+	 * the DFA.
 	 */
 	private static void loadDico() {
 		try {
@@ -61,10 +59,6 @@ public class LexicalAnalyzer {
 				for (i = 0; i < line.length(); i++) {
 					old = current;
 					c = line.charAt(i);
-					System.out.print("\n" + c + "---");
-					for (Letter a : current)
-						System.out.print(a.getValue() + "-");
-					
 					for (j = 0; j < current.size(); j++) {
 						if (current.get(j).getValue() == c) {
 							temp = current.get(j);
@@ -94,16 +88,12 @@ public class LexicalAnalyzer {
 		}
 	}
 	
-	//private static boolean checkKeyword(String input)
-	
 	/**
-	 * Utilise le DFA en arbre pour vérifier si un input
-	 * est une unité lexicale.
-	 * @param input l'entrée à vérifier
-	 * @return true si il appartient au langage
+	 * Checks if the given token is a Keyword
+	 * @param input the token
+	 * @return true if the token is a Keyword
 	 */
-	private static boolean check(String input) {
-		System.out.println(input);
+	private static boolean checkKeyword(String input) {
 		ArrayList<Letter> current = LexicalAnalyzer.DFA;
 		ArrayList<Letter> old;
 		Letter temp = null;
@@ -128,77 +118,141 @@ public class LexicalAnalyzer {
 			System.out.println("token: "+input+" --- lexical unit: "+temp.getUnit());
 		}
 		
-		if (!accept) {
-			Pattern pattern = Pattern.compile("(s?)9(\\((\\d+)\\))?(v9(\\((\\d+)\\))?)?", Pattern.CASE_INSENSITIVE);
-			Matcher match = pattern.matcher(input);
-			if (match.matches()) {
-				accept = true;
-				System.out.println("token: "+input+" --- lexical unit: IMAGE_TYPE");
-			};
-		}
+		return accept;
+	}
+	
+	/**
+	 * Checks if the input is an Image type declaration
+	 * @param input the input to check
+	 * @return true if the input is an image type declaration
+	 */
+	private static boolean checkImageType(String input) {
+		boolean accept = false;
 		
-		if (!accept) {
-			boolean meaning = false;
-			if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
-					((input.charAt(0) >= '1') && (input.charAt(0) <= '9'))) {
-				meaning = ((input.charAt(0) >= '1') && (input.charAt(0) <= '9'));
-				accept = true;
-				for (int i = 1; i < input.length(); i++) {
-					if (! (((input.charAt(i) >= '1') && (input.charAt(i) <= '9')) ||
-							((input.charAt(i) >= '0') && (input.charAt(i) <= '9') && meaning))){
-						accept = false;
-					}
-					if (!meaning)
-						meaning = ((input.charAt(i) >= '1') && (input.charAt(i) <= '9'));
+		Pattern pattern = Pattern.compile("(s?)9(\\((\\d+)\\))?(v9(\\((\\d+)\\))?)?", Pattern.CASE_INSENSITIVE);
+		Matcher match = pattern.matcher(input);
+		if (match.matches()) {
+			accept = true;
+			System.out.println("token: "+input+" --- lexical unit: IMAGE_TYPE");
+		};
+		
+		return accept;
+	}
+	
+	/**
+	 * Checks if the given input is an Integer
+	 * @param input the input to check
+	 * @return true if the input is an integer
+	 */
+	private static boolean checkInteger(String input) {
+		boolean accept = false;
+		boolean meaning = false;
+		if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
+				((input.charAt(0) >= '1') && (input.charAt(0) <= '9'))) {
+			meaning = ((input.charAt(0) >= '1') && (input.charAt(0) <= '9'));
+			accept = true;
+			for (int i = 1; i < input.length(); i++) {
+				if (! (((input.charAt(i) >= '1') && (input.charAt(i) <= '9')) ||
+						((input.charAt(i) >= '0') && (input.charAt(i) <= '9') && meaning))){
+					accept = false;
 				}
-				
-				if (accept) {
-					System.out.println("token: "+input+" --- lexical unit: INTEGER");
-				}
+				if (!meaning)
+					meaning = ((input.charAt(i) >= '1') && (input.charAt(i) <= '9'));
+			}
+			
+			if (accept) {
+				System.out.println("token: "+input+" --- lexical unit: INTEGER");
 			}
 		}
 		
-		if (!accept) {
-			boolean point = true;
-			if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
-					((input.charAt(0) >= '1') && (input.charAt(0) <= '9'))) {
-				boolean meaning = ((input.charAt(0) >= '1') && (input.charAt(0) <= '9'));
-				accept = true;
-				for (int i = 1; i < input.length(); i++) {
-					if (! (((input.charAt(i) >= '1') && (input.charAt(i) <= '9')) ||
-							(((input.charAt(i) >= '0') && (input.charAt(i) <= '9')) && meaning) ||
-							((input.charAt(i) == '.') && point)) ){
-						if (input.charAt(i) == '.')
-							point = false;
-						accept = false;
-					}
-					if (!meaning)
-						meaning = ((input.charAt(i) >= '1') && (input.charAt(i) <= '9'));
+		return accept;
+	}
+	
+	/**
+	 * Checks if the given input is a Real
+	 * @param input the input to check
+	 * @return true if the input is a Real
+	 */
+	private static boolean checkReal(String input) {
+		boolean accept = false;
+		boolean point = true;
+		if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
+				((input.charAt(0) >= '1') && (input.charAt(0) <= '9'))) {
+			boolean meaning = ((input.charAt(0) >= '1') && (input.charAt(0) <= '9'));
+			accept = true;
+			for (int i = 1; i < input.length(); i++) {
+				if (! (((input.charAt(i) >= '1') && (input.charAt(i) <= '9')) ||
+						(((input.charAt(i) >= '0') && (input.charAt(i) <= '9')) && meaning) ||
+						((input.charAt(i) == '.') && point)) ){
+					if (input.charAt(i) == '.')
+						point = false;
+					accept = false;
 				}
-				
-				if (accept) {
-					System.out.println("token: "+input+" --- lexical unit: REAL");
-				}
+				if (!meaning)
+					meaning = ((input.charAt(i) >= '1') && (input.charAt(i) <= '9'));
+			}
+			
+			if (accept) {
+				System.out.println("token: "+input+" --- lexical unit: REAL");
 			}
 		}
 		
-		if (!accept) {
-			if (((input.charAt(0) >= 'a') && (input.charAt(0) <= 'z')) ||
+		return accept;
+	}
+	
+	/**
+	 * Checks if the given input is an identifier
+	 * @param input the input to check
+	 * @return true if the input is an identifier
+	 */
+	private static boolean checkIdentifier(String input) {
+		boolean accept = false;
+		if (((input.charAt(0) >= 'a') && (input.charAt(0) <= 'z')) ||
 				((input.charAt(0) >= 'A') && (input.charAt(0) <= 'Z'))) {
-				accept = true;
-				for (int i = 1; i < input.length(); i++) {
-					if (! (((input.charAt(i) >= 'a') && (input.charAt(i) <= 'z')) ||
-							((input.charAt(i) >= 'A') && (input.charAt(i) <= 'Z')) ||
-							((input.charAt(i) >= '0') && (input.charAt(i) <= '9')) ||
-							(input.charAt(i) == '_') || (input.charAt(i) == '-'))) {
-						accept = false;
-					}
-				}
-				
-				if (accept) {
-					System.out.println("token: "+input+" --- lexical unit: IDENTIFIER");
+			accept = true;
+			for (int i = 1; i < input.length(); i++) {
+				if (! (((input.charAt(i) >= 'a') && (input.charAt(i) <= 'z')) ||
+						((input.charAt(i) >= 'A') && (input.charAt(i) <= 'Z')) ||
+						((input.charAt(i) >= '0') && (input.charAt(i) <= '9')) ||
+						(input.charAt(i) == '_') || (input.charAt(i) == '-'))) {
+					accept = false;
 				}
 			}
+			
+			if (accept) {
+				System.out.println("token: "+input+" --- lexical unit: IDENTIFIER");
+			}
+		}
+		
+		return accept;
+	}
+	
+	/**
+	 * Utilise le DFA en arbre pour vérifier si un input
+	 * est une unité lexicale.
+	 * @param input l'entrée à vérifier
+	 * @return true si il appartient au langage
+	 */
+	private static boolean check(String input) {
+		System.out.println(input);
+		boolean accept = false;
+		
+		accept = LexicalAnalyzer.checkKeyword(input);
+		
+		if (!accept) {
+			accept = LexicalAnalyzer.checkImageType(input);
+		}
+		
+		if (!accept) {
+			accept = LexicalAnalyzer.checkInteger(input);
+		}
+		
+		if (!accept) {
+			accept = LexicalAnalyzer.checkReal(input);
+		}
+		
+		if (!accept) {
+			accept = LexicalAnalyzer.checkIdentifier(input);
 		}
 		
 		return accept;
