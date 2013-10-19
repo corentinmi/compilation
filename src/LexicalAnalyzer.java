@@ -1,5 +1,3 @@
-import identifiers.Letter;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -12,38 +10,20 @@ public class LexicalAnalyzer {
 	private static ArrayList<Letter> DFA = new ArrayList<Letter>();
 
 	/**
-	 * Loads the dictionary, and loops on the standard input.
-	 * When a token is detected, it is checked by the DFA
-	 * @param args
+	 * Checks the token for a lexical unit
+	 * @return the numeric representation of the lexical unit
 	 */
-	public static void main(String[] args) {
-		String line = new String();
+	public static int nextToken(String input) {
 		
-		LexicalAnalyzer.loadDico();
-		System.out.println("Introduction to Language Theory and Compilation");
-		System.out.println("Project 1 - Jorge Garcia Ximenez and Corentin Misercque");
-		
-		Scanner input = new Scanner(System.in);
-		Scanner ls;
-		
-		while(!line.contentEquals("end")) {
-			line = input.nextLine();
-			ls = new Scanner(line);
-			while (ls.hasNext()) {
-				LexicalAnalyzer.check(ls.next());
-			}
-			LexicalAnalyzer.checkString(line);
-			System.out.println("token: \\n --- lexical unit: END_OF_INSTRUCTION");
-		}
-		
-		input.close();
+		LexicalAnalyzer.check(input);
+		return 0;
 	}
 	
 	/**
 	 * Loads the keywords dictionary, and creates
 	 * the DFA.
 	 */
-	private static void loadDico() {
+	public static void loadDico() {
 		try {
 			Scanner br = new Scanner(new File("dico.txt"));
 			String line;
