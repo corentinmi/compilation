@@ -3,6 +3,11 @@
 
 import java.util.ArrayList;
 
+/**
+ * Class representing a state of the DFA, and the letter required to arrive to it.
+ * @author Corentin Misercque, Jorge Garcia Ximenez
+ *
+ */
 public class Letter {
 
 	private char value;

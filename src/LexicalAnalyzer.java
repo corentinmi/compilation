@@ -4,26 +4,20 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * Class that recognizes tokens
+ * @author Corentin Misercque, Jorge Garcia Ximenez
+ *
+ */
 public class LexicalAnalyzer {
 	
-	private static ArrayList<Letter> DFA = new ArrayList<Letter>();
-
-	/**
-	 * Checks the token for a lexical unit
-	 * @return the numeric representation of the lexical unit
-	 */
-	public static int nextToken(String input) {
-		
-		LexicalAnalyzer.check(input);
-		return 0;
-	}
+	private ArrayList<Letter> DFA = new ArrayList<Letter>();
 	
 	/**
 	 * Loads the keywords dictionary, and creates
 	 * the DFA.
 	 */
-	public static void loadDico() {
+	public LexicalAnalyzer() {
 		try {
 			Scanner br = new Scanner(new File("dico.txt"));
 			String line;
@@ -34,7 +28,7 @@ public class LexicalAnalyzer {
 			
 			while (br.hasNext()) {
 				line = br.next();
-				current = LexicalAnalyzer.DFA;
+				current = DFA;
 				
 				for (i = 0; i < line.length(); i++) {
 					old = current;
@@ -73,8 +67,8 @@ public class LexicalAnalyzer {
 	 * @param input the token
 	 * @return true if the token is a Keyword
 	 */
-	private static boolean checkKeyword(String input) {
-		ArrayList<Letter> current = LexicalAnalyzer.DFA;
+	private boolean checkKeyword(String input) {
+		ArrayList<Letter> current = DFA;
 		ArrayList<Letter> old;
 		Letter temp = null;
 		boolean accept = false;
@@ -106,7 +100,7 @@ public class LexicalAnalyzer {
 	 * @param input the input to check
 	 * @return true if the input is an image type declaration
 	 */
-	private static boolean checkImageType(String input) {
+	private boolean checkImageType(String input) {
 		boolean accept = false;
 		
 		Pattern pattern = Pattern.compile("(s?)9(\\((\\d+)\\))?(v9(\\((\\d+)\\))?)?", Pattern.CASE_INSENSITIVE);
@@ -124,7 +118,7 @@ public class LexicalAnalyzer {
 	 * @param input the input to check
 	 * @return true if the input is an integer
 	 */
-	private static boolean checkInteger(String input) {
+	private boolean checkInteger(String input) {
 		boolean accept = false;
 		boolean meaning = false;
 		if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
@@ -156,7 +150,7 @@ public class LexicalAnalyzer {
 	 * @param input the input to check
 	 * @return true if the input is a Real
 	 */
-	private static boolean checkReal(String input) {
+	private boolean checkReal(String input) {
 		boolean accept = false;
 		boolean point = true;
 		if ((input.charAt(0) == '+') || (input.charAt(0) == '-') ||
@@ -188,7 +182,7 @@ public class LexicalAnalyzer {
 	 * @param input the input to check
 	 * @return true if the input is an identifier
 	 */
-	private static boolean checkIdentifier(String input) {
+	private boolean checkIdentifier(String input) {
 		boolean accept = false;
 		if (((input.charAt(0) >= 'a') && (input.charAt(0) <= 'z')) ||
 				((input.charAt(0) >= 'A') && (input.charAt(0) <= 'Z'))) {
@@ -216,41 +210,42 @@ public class LexicalAnalyzer {
 	 * @param input l'entrée à vérifier
 	 * @return true si il appartient au langage
 	 */
-	private static boolean check(String input) {
+	public int nextToken(String input) {
 		//System.out.println(input);
-		boolean accept = false;
 		
-		accept = LexicalAnalyzer.checkKeyword(input);
+		if (checkKeyword(input))
+			return 1;
 		
-		if (!accept) {
-			accept = LexicalAnalyzer.checkImageType(input);
-		}
+		if (checkImageType(input))
+			return 2;
 		
-		if (!accept) {
-			accept = LexicalAnalyzer.checkInteger(input);
-		}
+		if (checkInteger(input))
+			return 3;
 		
-		if (!accept) {
-			accept = LexicalAnalyzer.checkReal(input);
-		}
+		if (checkReal(input))
+			return 4;
 		
-		if (!accept) {
-			accept = LexicalAnalyzer.checkIdentifier(input);
-		}
+		if (checkIdentifier(input))
+			return 5;
 		
-		return accept;
+		if (checkString(input))
+			return 6;
+		
+		return 0;
 	}
 	
 	/** 
 	 * Checks if the line contains a string
 	 * @param input the input line
 	 */
-	public static void checkString(String input) {
+	private boolean checkString(String input) {
 		Pattern pattern = Pattern.compile("\\'[a-zA-Z\\d\\+\\-\\*/:!? ]*\\'", Pattern.CASE_INSENSITIVE);
 		Matcher match = pattern.matcher(input);
-		while (match.find()) {
+		if (match.find()) {
 			System.out.println("token: "+match.group()+" --- lexical unit: STRING");
+			return true;
 		}
+		return false;
 	}
 
 }
